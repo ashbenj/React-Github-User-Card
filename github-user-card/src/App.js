@@ -1,64 +1,56 @@
 import React from 'react';
-import axios from 'axios';
-import '../src/components/App.css';
+import 'semantic-ui-react';
+
+// import './App.css';
+import UserCard from './components/UserCard';
+import CardList from './components/CardList';
 
 class App extends React.Component {
 	constructor() {
 		super();
 		this.state = {
-			user: 'ashbenj',
-			followers: []
+			MyData: [],
+			MyFollowers: []
 		};
 	}
 
 	componentDidMount() {
-		this.getUsers();
-		this.getFollowers();
+		this.FetchMyData();
+		this.FetchMyFollowers();
 	}
 
-	getUsers = () => {
-		axios
-			.get(`https://api.github.com/users/${this.state.user}`)
-			.then(response => {
-				console.log('data from user axios', response.data);
-				this.setState({ user: response.data });
+	FetchMyData = () => {
+		fetch('https://api.github.com/users/ashbenj')
+			.then(res => {
+				return res.json();
 			})
-			.catch(error => {
-				console.log('Data was not returned', error);
-			});
+			.then(data => {
+				return this.setState({ MyData: data });
+			})
+			.catch(err => console.log(err));
 	};
 
-	getFollowers = () => {
-		axios
-			.get(`https://api.github.com/users/${this.state.user}/following`)
-			.then(response => {
-				console.log('data from followers axios', response.data);
-				this.setState({ followers: response.data });
+	FetchMyFollowers = () => {
+		fetch('https://api.github.com/users/ashbenj/followers')
+			.then(res => {
+				return res.json();
 			})
-			.catch(error => {
-				console.log('Data was not returned', error);
-			});
+			.then(data => {
+				return this.setState({ MyFollowers: data });
+			})
+			.catch(err => console.log(err));
 	};
 
 	render() {
 		return (
-			<div>
-				<h1>Github User Card</h1>
-				<div className='user-content'>
-					<h3 className='user-name'>{this.state.user.name}</h3>
-					<img
-						className='user-img'
-						src={this.state.user.avatar_url}
-						alt="user's avatar"
-					/>
-					<div>
-						<p>Bio:{this.state.user.bio}</p>
-						<p>Location:{this.state.user.location}</p>
-						<p>
-							Followers:{this.state.followers.map(follower => follower.login)}
-						</p>
-					</div>
-				</div>
+			<div className='App'>
+				<h1>GitHub User Card</h1>
+				<UserCard MyData={this.state.MyData} />
+				<CardList MyFollowers={this.state.MyFollowers} />
+				{/* {console.log(this.state.MyData)} */}
+
+				{/* {console.log(this.state.MyFollowers)} */}
+				{/* <UserCard MyData={this.state.MyData} /> */}
 			</div>
 		);
 	}
